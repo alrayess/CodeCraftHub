@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeCraftHub - Your Learning Management Platform</title>
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #64748b;
+      --border: #dbe3ef;
+      --danger: #ef4444;
+      --danger-dark: #dc2626;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #4338ca, #2563eb);
+      color: white;
+      text-align: center;
+      padding: 34px 20px;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+    }
+
+    header p {
+      margin: 0;
+      opacity: 0.92;
+    }
+
+    main {
+      width: min(1000px, calc(100% - 32px));
+      margin: 28px auto;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 22px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .full {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: #8B5CF6;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(0.94);
+    }
+
+    .btn-success {
+      background: #F59E0B;
+      color: white;
+    }
+
+    .btn-success:hover {
+      filter: brightness(0.94);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: var(--danger-dark);
+    }
+
+    .course-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    .course {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      background: white;
+    }
+
+    .course h3 {
+      margin-top: 0;
+    }
+
+    .course p {
+      color: var(--muted);
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: #eef2ff;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    #message {
+      min-height: 22px;
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    .error {
+      color: #b91c1c;
+    }
+
+    .success {
+      color: #047857;
+    }
+
+    @media (max-width: 650px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>CodeCraftHub</h1>
+    <p>Your Learning Management Platform</p>
+  </header>
+
+  <main>
+
+    <section class="panel">
+
+      <h2>Add a Course</h2>
+
+      <div id="message"></div>
+
+      <form id="courseForm">
+
+        <div class="grid">
+
+          <div class="full">
+            <label for="name">Course Name</label>
+            <input
+              id="name"
+              name="name"
+              type="text"
+              required
+            />
+          </div>
+
+          <div class="full">
+            <label for="description">Description</label>
+            <textarea
+              id="description"
+              name="description"
+              required
+            ></textarea>
+          </div>
+
+          <div>
+            <label for="target_date">Target Date</label>
+            <input
+              id="target_date"
+              name="target_date"
+              type="date"
+              required
+            />
+          </div>
+
+          <div>
+            <label for="status">Status</label>
+
+            <select id="status" name="status">
+              <option value="planned">Planned</option>
+              <option value="in-progress">In Progress</option>
+              <option value="completed">Completed</option>
+            </select>
+
+          </div>
+
+        </div>
+
+        <div class="actions">
+
+          <button
+            class="btn btn-primary"
+            type="submit"
+          >
+            Add Course
+          </button>
+
+          <button
+            class="btn btn-success"
+            type="button"
+            onclick="loadCourses()"
+          >
+            Refresh Courses
+          </button>
+
+        </div>
+
+      </form>
+
+    </section>
+
+    <section class="panel">
+
+      <h2>Your Courses</h2>
+
+      <div id="courses" class="course-list">
+        Loading...
+      </div>
+
+    </section>
+
+  </main>
+
+  <script>
+
+    const API_URL = "http://localhost:5000/api/courses";
+
+    let courses = [];
+
+
+    function setMessage(text, type = "") {
+
+      const element = document.getElementById("message");
+
+      element.textContent = text;
+      element.className = type;
+
+    }
+
+
+    async function loadCourses() {
+
+      const container = document.getElementById("courses");
+
+      container.textContent = "Loading...";
+
+      try {
+
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        courses = Array.isArray(result.data)
+          ? result.data
+          : [];
+
+        renderCourses();
+
+      } catch (error) {
+
+        container.innerHTML =
+          "<p>Could not load courses. Make sure the backend is running on port 5000.</p>";
+
+      }
+
+    }
+
+
+    function renderCourses() {
+
+      const container = document.getElementById("courses");
+
+      if (courses.length === 0) {
+
+        container.innerHTML =
+          "<p>No courses yet.</p>";
+
+        return;
+
+      }
+
+
+      container.innerHTML = courses.map(course => `
+
+        <article class="course">
+
+          <span class="status">
+            ${escapeHtml(course.status || "")}
+          </span>
+
+          <h3>
+            ${escapeHtml(course.name || "")}
+          </h3>
+
+          <p>
+            ${escapeHtml(course.description || "")}
+          </p>
+
+          <p>
+            <strong>Target date:</strong>
+            ${escapeHtml(course.target_date || "")}
+          </p>
+
+          <div class="actions">
+
+            <button
+              class="btn btn-primary"
+              onclick="handleEdit('${course.id}')"
+            >
+              Edit
+            </button>
+
+            <button
+              class="btn btn-danger"
+              onclick="handleDelete('${course.id}')"
+            >
+              Remove
+            </button>
+
+          </div>
+
+        </article>
+
+      `).join("");
+
+    }
+
+
+    document
+      .getElementById("courseForm")
+      .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+
+        const payload = {
+
+          name:
+            document
+              .getElementById("name")
+              .value
+              .trim(),
+
+          description:
+            document
+              .getElementById("description")
+              .value
+              .trim(),
+
+          target_date:
+            document
+              .getElementById("target_date")
+              .value,
+
+          status:
+            document
+              .getElementById("status")
+              .value
+
+        };
+
+
+        if (
+          !payload.name ||
+          !payload.description ||
+          !payload.target_date
+        ) {
+
+          setMessage(
+            "Please complete all required fields.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        try {
+
+          const response = await fetch(API_URL, {
+
+            method: "POST",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify(payload)
+
+          });
+
+
+          const result =
+            await response.json().catch(() => ({}));
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              result.message ||
+              `HTTP ${response.status}`
+            );
+
+          }
+
+
+          this.reset();
+
+          setMessage(
+            "Course added successfully.",
+            "success"
+          );
+
+          await loadCourses();
+
+
+        } catch (error) {
+
+          setMessage(
+            error.message ||
+            "Could not add course.",
+            "error"
+          );
+
+        }
+
+      });
+
+
+    async function handleEdit(id) {
+
+      const course = courses.find(
+        course =>
+          String(course.id) === String(id)
+      );
+
+
+      if (!course) {
+        return;
+      }
+
+
+      const name = prompt(
+        "Course name:",
+        course.name || ""
+      );
+
+      if (name === null) {
+        return;
+      }
+
+
+      const description = prompt(
+        "Description:",
+        course.description || ""
+      );
+
+      if (description === null) {
+        return;
+      }
+
+
+      const target_date = prompt(
+        "Target date (YYYY-MM-DD):",
+        course.target_date || ""
+      );
+
+      if (target_date === null) {
+        return;
+      }
+
+
+      const status = prompt(
+        "Status: planned, in-progress, or completed",
+        course.status || "planned"
+      );
+
+      if (status === null) {
+        return;
+      }
+
+
+      try {
+
+        const response = await fetch(
+          `${API_URL}/${encodeURIComponent(id)}`,
+          {
+
+            method: "PUT",
+
+            headers: {
+              "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+              name,
+              description,
+              target_date,
+              status
+            })
+
+          }
+        );
+
+
+        const result =
+          await response.json().catch(() => ({}));
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.message ||
+            `HTTP ${response.status}`
+          );
+
+        }
+
+
+        setMessage(
+          "Course updated successfully.",
+          "success"
+        );
+
+
+        await loadCourses();
+
+
+      } catch (error) {
+
+        setMessage(
+          error.message ||
+          "Could not update course.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    async function handleDelete(id) {
+
+      if (!confirm("Remove this course?")) {
+        return;
+      }
+
+
+      try {
+
+        const response = await fetch(
+          `${API_URL}/${encodeURIComponent(id)}`,
+          {
+            method: "DELETE"
+          }
+        );
+
+
+        const result =
+          await response.json().catch(() => ({}));
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            result.message ||
+            `HTTP ${response.status}`
+          );
+
+        }
+
+
+        setMessage(
+          "Course removed successfully.",
+          "success"
+        );
+
+
+        await loadCourses();
+
+
+      } catch (error) {
+
+        setMessage(
+          error.message ||
+          "Could not remove course.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    function escapeHtml(value) {
+
+      return String(value)
+
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    loadCourses();
+
+  </script>
+
+</body>
+</html>
